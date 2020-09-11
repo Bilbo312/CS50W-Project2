@@ -1,0 +1,11 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    {% for listing in listings %}
+    <li>
+        Listing {{ listing.id }}: {{ listing.name }} to {{ listing.body_text }}, its starting bid is ${{listing.init_price}}.
+    </li>
+    {% endfor %}
+{% endblock %}
