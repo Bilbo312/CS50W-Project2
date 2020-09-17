@@ -5,8 +5,11 @@
 
     {% for listing in listings %}
     <li>
-        Listing {{ listing.id }}: {{ listing.name }} to {{ listing.body_text }}, its starting bid is ${{listing.init_price}}.
+        <a href="{% url 'listing' listing.id%}">
+            Listing {{ listing.id }}: {{ listing.name }} to {{ listing.body_text }}, its starting bid is ${{listing.init_price}}.
+        </a>
     </li>
     {% endfor %}
 
 {% endblock %}
+
