@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Auction_listings
+from .models import User, Auction_listings, Category
 from .forms import NewListingForm
 
 def index(request):
@@ -98,3 +98,22 @@ def all_listings(request):
         "listings": Auction_listings.objects.all()
     })
     
+
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": Category.objects.all()
+    })
+
+
+def listing(request, Auction_listings_id):
+    all_listings = Auction_listings.objects.order_by().values_list('id', flat=True).distinct()
+    if Auction_listings_id not in all_listings:
+        return render(request, "auctions/error_message.html", {
+            "message": "This page does not exist" + str(all_listings) #Just to check which values are in all_listings
+        })
+
+    else:
+        listing = Auction_listings.objects.get(id = Auction_listings_id)
+        return render(request, "auctions/listing.html", {
+            "listing": listing
+        })
