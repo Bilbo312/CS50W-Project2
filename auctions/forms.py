@@ -9,3 +9,6 @@ class NewListingForm(forms.Form):
     init_price = forms.FloatField(widget=forms.NumberInput, label = "init_bid")
     picture = forms.URLField(required = False, label = "picture")
     category = forms.ChoiceField(widget=forms.Select, choices = Category.CATEGORY_CHOICES)
+
+class NewBidForm(forms.Form):
+    new_bid = forms.FloatField(widget = forms.NumberInput, label = "new_bid", required= False)

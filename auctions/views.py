@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Auction_listings, Category
-from .forms import NewListingForm
+from .models import User, Auction_listings, Category, Bids
+from .forms import NewListingForm, NewBidForm
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -114,6 +114,42 @@ def listing(request, Auction_listings_id):
 
     else:
         listing = Auction_listings.objects.get(id = Auction_listings_id)
+        bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
+        form = NewBidForm(request.POST)
         return render(request, "auctions/listing.html", {
-            "listing": listing
+            "listing": listing,
+            "bids": bids,
+            "form": form
         })
+
+
+def new_bid(request, Auction_listings_id):
+    if request.method == "POST":
+        form = NewBidForm(request.POST)
+        highest_bid = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')[0] 
+        listing = Auction_listings.objects.get(id = Auction_listings_id)
+        bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
+        if form.is_valid():
+            new_bid = form.cleaned_data["new_bid"]
+            if new_bid > highest_bid.bid_value:
+                newBid = Bids(
+                    bidding_user = User,
+                    selling_item = Auction_listings_id,
+                    bid_value = new_bid,
+                    number_of_bids = number_of_bids + 1
+                )
+                newBid.save()
+                return render(request, "auctions/listing.html", {
+                    "listing": listing,
+                    "bids": bids,
+                    "form": form,
+                    "message": "Your bid of " + str(new_bid) + " is now the leading bid"
+                })
+
+            else:
+                return render(request, "auctions/listing.html", {
+                    "listing": listing,
+                    "bids": bids,
+                    "form": form,
+                    "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
+                })

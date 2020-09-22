@@ -5,6 +5,13 @@
 
     {{listing.body_text}}
 
+    {{bids}}
 
+    <form action="{% url 'new_bid' listing.id%}" method = "POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
 
+    {{message}}
 {% endblock %}
