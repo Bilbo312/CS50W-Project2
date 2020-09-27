@@ -3,9 +3,11 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
-from .models import User, Auction_listings, Category, Bids, WatchList
-from .forms import NewListingForm, NewBidForm
+from .models import User, Auction_listings, Category, Bids, WatchList, Comment
+from .forms import NewListingForm, NewBidForm, NewCommentForm
+
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -65,6 +67,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+@login_required(login_url = '/login')
 def create_listing(request):
     if request.method == "POST":
         form = NewListingForm(request.POST)
@@ -92,13 +95,8 @@ def create_listing(request):
         return render(request, "auctions/New_listing.html", {
             'form': NewListingForm()
         })
-
-def all_listings(request):
-    return render(request, "auctions/all_listing.html", {
-        "listings": Auction_listings.objects.all()
-    })
     
-
+@login_required(login_url = '/login')
 def categories(request):
     return render(request, "auctions/categories.html", {
         "categories": Category.objects.all()
@@ -115,14 +113,20 @@ def listing(request, Auction_listings_id):
     else:
         listing = Auction_listings.objects.get(id = Auction_listings_id)
         bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
+        comments = Comment.objects.filter(item = listing)
+        no_comments = Comment.objects.filter(item = Auction_listings_id).count()
         form = NewBidForm(request.POST)
+        form_2 = NewCommentForm(request.POST)
         return render(request, "auctions/listing.html", {
             "listing": listing,
             "bids": bids,
             "form": form,
+            "comment_form": form_2,
+            "comments": comments,
+            "no_comments": no_comments
         })
 
-
+@login_required(login_url = '/login')
 def new_bid(request, Auction_listings_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
@@ -156,6 +160,7 @@ def new_bid(request, Auction_listings_id):
                     "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
                 })
 
+@login_required(login_url = '/login')
 def go_watch(request):
     user = request.user
     Listitems = WatchList.objects.filter(Watchuser = user)
@@ -164,6 +169,7 @@ def go_watch(request):
         "listitems": Listitems
     })
 
+@login_required(login_url = '/login')
 def add_watch(request, Auction_listings_id):
     listing = Auction_listings.objects.get(id = Auction_listings_id)
     form = NewBidForm(request.POST)
@@ -185,7 +191,20 @@ def add_watch(request, Auction_listings_id):
         newWatch.save()
         return HttpResponseRedirect('/watchlist')
 
+@login_required(login_url = '/login')
 def del_watch(request, Watchitem_id):
     item = WatchList.objects.filter(Watchitem_id = Watchitem_id)
     item.delete()
     return HttpResponseRedirect('/watchlist')
+
+def new_comment(request, Auction_listings_id):
+    if request.method == "POST":
+        form_2 = NewCommentForm(request.POST)
+        user = request.user
+        item = Auction_listings.objects.get(id = Auction_listings_id)
+        if form_2.is_valid():
+            content = form_2.cleaned_data["comment_content"]
+
+            newComment = Comment(commenter = user, item = item, comment = content)
+            newComment.save()
+            return HttpResponseRedirect('/listing/%s' % Auction_listings_id)

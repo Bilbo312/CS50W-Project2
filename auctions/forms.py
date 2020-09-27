@@ -12,3 +12,6 @@ class NewListingForm(forms.Form):
 
 class NewBidForm(forms.Form):
     new_bid = forms.FloatField(widget = forms.NumberInput, label = "new_bid", required= False)
+
+class NewCommentForm(forms.Form):
+    comment_content = forms.CharField(widget= forms.Textarea, label= "new_comment", required = False)
