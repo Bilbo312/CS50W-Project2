@@ -156,12 +156,19 @@ def new_bid(request, Auction_listings_id):
                     "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
                 })
 
+def go_watch(request):
+    user = request.user
+    Listitems = WatchList.objects.filter(Watchuser = user)
+    return render(request, "auctions/watchlist.html", { 
+        "user": user,
+        "listitems": Listitems
+    })
 
 def add_watch(request, Auction_listings_id):
     listing = Auction_listings.objects.get(id = Auction_listings_id)
-    user = request.user
     form = NewBidForm(request.POST)
     bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
+    user = request.user
     if WatchList.objects.filter(Watchuser = user, Watchitem=listing).exists():
         return render(request, "auctions/listing.html", {
                     "listing": listing,
@@ -176,8 +183,9 @@ def add_watch(request, Auction_listings_id):
             Watchitem = listing
         )
         newWatch.save()
-        Listitems = WatchList.objects.filter(Watchuser = user)
-        return render(request, "auctions/watchlist.html", { 
-            "user": user,
-            "listitems": Listitems
-        })
+        return HttpResponseRedirect('/watchlist')
+
+def del_watch(request, Watchitem_id):
+    item = WatchList.objects.filter(Watchitem_id = Watchitem_id)
+    item.delete()
+    return HttpResponseRedirect('/watchlist')

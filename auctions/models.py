@@ -49,7 +49,7 @@ class Auction_listings(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, max_length=16, null = True)
 
     def __str__(self):
-        return f"{self.name}, {self.body_text} and the start price is ${self.init_price}"
+        return f"{self.name}"
 
 
 #Model for all bids on Auction listings

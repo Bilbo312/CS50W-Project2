@@ -20,7 +20,7 @@
     <a href="{% url 'add_watch' listing.id%}">Add to watchlist</a>
     LLLLL
     {% if question %}
-        {{message}}. Would you like to go to your <a href="{% url 'add_watch' listing.id%}">watchlist</a>?
+        {{message}}. Would you like to go to your <a href="{% url 'go_watch'%}">watchlist</a>?
         {% else %}
             
     {% endif %}

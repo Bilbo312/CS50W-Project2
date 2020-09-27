@@ -5,7 +5,8 @@
 
     {% for listitem in listitems %}
         <li>
-            Listing {{ listitem.Watchitem }} is being watched by you : {{ listitem.Watchuser }}
+            Listing {{ listitem.Watchitem }} is being watched by you : {{ listitem.Watchuser }}. 
+            <a href="{% url 'del_watch' listitem.Watchitem_id %}">Delete item</a>
         </li>
     {% endfor %}
 
