@@ -13,7 +13,15 @@
         <input type="submit">
     </form>
 
-    {{message}}
+    
 
     ##{{no_bids}}
+
+    <a href="{% url 'add_watch' listing.id%}">Add to watchlist</a>
+    LLLLL
+    {% if question %}
+        {{message}}. Would you like to go to your <a href="{% url 'add_watch' listing.id%}">watchlist</a>?
+        {% else %}
+            
+    {% endif %}
 {% endblock %}

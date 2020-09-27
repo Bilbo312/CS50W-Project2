@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Auction_listings, Category, Bids
+from .models import User, Auction_listings, Category, Bids, WatchList
 from .forms import NewListingForm, NewBidForm
 
 def index(request):
@@ -119,7 +119,7 @@ def listing(request, Auction_listings_id):
         return render(request, "auctions/listing.html", {
             "listing": listing,
             "bids": bids,
-            "form": form
+            "form": form,
         })
 
 
@@ -155,3 +155,29 @@ def new_bid(request, Auction_listings_id):
                     "form": form,
                     "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
                 })
+
+
+def add_watch(request, Auction_listings_id):
+    listing = Auction_listings.objects.get(id = Auction_listings_id)
+    user = request.user
+    form = NewBidForm(request.POST)
+    bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
+    if WatchList.objects.filter(Watchuser = user, Watchitem=listing).exists():
+        return render(request, "auctions/listing.html", {
+                    "listing": listing,
+                    "bids": bids,
+                    "form": form,
+                    "message": "This item is already on the Watchlist",
+                    "question": True
+                })
+    else:
+        newWatch = WatchList(
+            Watchuser = user,
+            Watchitem = listing
+        )
+        newWatch.save()
+        Listitems = WatchList.objects.filter(Watchuser = user)
+        return render(request, "auctions/watchlist.html", { 
+            "user": user,
+            "listitems": Listitems
+        })
