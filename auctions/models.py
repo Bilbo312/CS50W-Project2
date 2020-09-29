@@ -47,6 +47,7 @@ class Auction_listings(models.Model):
     init_price = models.FloatField(max_length=16)
     picture = models.URLField(null = True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, max_length=16, null = True)
+    status = models.BooleanField(default = True)
 
     def __str__(self):
         return f"{self.name}"
@@ -57,7 +58,6 @@ class Bids(models.Model):
     bidding_user = models.ForeignKey(User, on_delete = models.CASCADE)
     selling_item = models.ForeignKey(Auction_listings, on_delete = models.CASCADE, related_name="item")
     bid_value = models.DecimalField(decimal_places=2, max_digits=9)
-    number_of_bids = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -8,11 +8,6 @@
     starting price is ${{listing.init_price}}
     {{bids}}
 
-    <form action="{% url 'new_bid' listing.id%}" method = "POST">
-        {% csrf_token %}
-        {{form}}
-        <input type="submit">
-    </form>
 
     {% if user.is_authenticated %}
         <a href="{% url 'add_watch' listing.id%}">Add to watchlist</a>
@@ -21,26 +16,33 @@
     {% endif %}
     
 
-    ##{{no_bids}}
+    There are {{no_bids}} on this item
 
-    
+    ???????????????{{valid}}??????????????????????
     LLLLL
     {% if question %}
         {{message}}. Would you like to go to your <a href="{% url 'go_watch'%}">watchlist</a>?
         {% else %}
             
     {% endif %}
+    {% if valid == True %}
+        <form action="{% url 'new_bid' listing.id%}" method = "POST">
+            {% csrf_token %}
+            {{form}}
+            <input type="submit">
+        </form>
 
+        <form action="{% url 'new_comment' listing.id%}" method = "POST">
+            {% csrf_token %}
+            {{comment_form}}
+            <input type="submit">
+        </form>
+    {% endif %}
     Comments ({{no_comments}})
     {% for comment in comments %}
     <li>
         {{comment.comment}} | {{comment.commenter}} @ {{comment.created}}
     </li>
     {% endfor %}
-
-    <form action="{% url 'new_comment' listing.id%}" method = "POST">
-        {% csrf_token %}
-        {{comment_form}}
-        <input type="submit">
-    </form>
+    
 {% endblock %}

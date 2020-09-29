@@ -105,16 +105,21 @@ def categories(request):
 
 def listing(request, Auction_listings_id):
     all_listings = Auction_listings.objects.order_by().values_list('id', flat=True).distinct()
+    valid = Auction_listings.objects.filter(id = Auction_listings_id).get().status
+    listing = Auction_listings.objects.get(id = Auction_listings_id)
+    bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
+    comments = Comment.objects.filter(item = listing)
+    no_bids = Bids.objects.filter(selling_item = Auction_listings_id).count()
+    no_comments = Comment.objects.filter(item = Auction_listings_id).count()
+    user = request.user
+    #lister = listing.creator
+
     if Auction_listings_id not in all_listings:
         return render(request, "auctions/error_message.html", {
             "message": "This page does not exist" + str(all_listings) #Just to check which values are in all_listings
         })
-
-    else:
-        listing = Auction_listings.objects.get(id = Auction_listings_id)
-        bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
-        comments = Comment.objects.filter(item = listing)
-        no_comments = Comment.objects.filter(item = Auction_listings_id).count()
+    
+    else: #valid == True
         form = NewBidForm(request.POST)
         form_2 = NewCommentForm(request.POST)
         return render(request, "auctions/listing.html", {
@@ -123,7 +128,11 @@ def listing(request, Auction_listings_id):
             "form": form,
             "comment_form": form_2,
             "comments": comments,
-            "no_comments": no_comments
+            "no_comments": no_comments,
+            "no_bids": no_bids,
+            "valid": valid,
+            "user": user,
+            #"lister":lister
         })
 
 @login_required(login_url = '/login')
@@ -141,7 +150,6 @@ def new_bid(request, Auction_listings_id):
                     bidding_user = user,
                     selling_item = listing,
                     bid_value = new_bid,
-                    number_of_bids = Bids.objects.filter(selling_item = Auction_listings_id).count() #Doesn't work
                 )
                 newBid.save()
                 return render(request, "auctions/listing.html", {
@@ -197,6 +205,7 @@ def del_watch(request, Watchitem_id):
     item.delete()
     return HttpResponseRedirect('/watchlist')
 
+@login_required(login_url = '/login')
 def new_comment(request, Auction_listings_id):
     if request.method == "POST":
         form_2 = NewCommentForm(request.POST)
