@@ -8,17 +8,27 @@
     starting price is ${{listing.init_price}}
     {{bids}}
 
+    @@@@@@{{user}}|{{lister}}
 
     {% if user.is_authenticated %}
         <a href="{% url 'add_watch' listing.id%}">Add to watchlist</a>
     {% else %}
         Please note you cannot Bid without being logged in 
     {% endif %}
-    
+
+    {% if user == lister %}
+        Close listing: 
+        <form action = "{% url 'delist' listing.id%}" method = "POST">
+            {% csrf_token %}
+            <input type = "checkbox">
+            <input type="submit">
+        </form>
+    {% endif %}
 
     There are {{no_bids}} on this item
-
+    <strong>{{highest_bid}}</strong>
     ???????????????{{valid}}??????????????????????
+    <strong>{{message}}</strong>
     LLLLL
     {% if question %}
         {{message}}. Would you like to go to your <a href="{% url 'go_watch'%}">watchlist</a>?

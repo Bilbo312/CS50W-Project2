@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import User, Auction_listings, Category, Bids, WatchList, Comment
 from .forms import NewListingForm, NewBidForm, NewCommentForm
@@ -75,11 +76,15 @@ def create_listing(request):
             title = form.cleaned_data["Listing_title"]
             content = form.cleaned_data["Listing_content"]
             init_price = form.cleaned_data["init_price"]
+            picture = form.cleaned_data["picture"]
+            bidder = request.user
             
             new_listing = Auction_listings(
                 name = title,
                 body_text = content,
-                init_price = init_price
+                init_price = init_price,
+                owner = bidder,
+                picture = picture
             )
             
             new_listing.save()
@@ -112,14 +117,20 @@ def listing(request, Auction_listings_id):
     no_bids = Bids.objects.filter(selling_item = Auction_listings_id).count()
     no_comments = Comment.objects.filter(item = Auction_listings_id).count()
     user = request.user
-    #lister = listing.creator
+    lister = listing.owner
+    if Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first() is not None:
+        highest_bid_2 = Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first()  #if no preexisting need to get starting
+        highest_bid = highest_bid_2.bid_value
+    else:
+        highest_bid = listing.init_price
+    if 'message' not in locals() :
+        message = "No message here"
 
     if Auction_listings_id not in all_listings:
         return render(request, "auctions/error_message.html", {
             "message": "This page does not exist" + str(all_listings) #Just to check which values are in all_listings
         })
-    
-    else: #valid == True
+    else: 
         form = NewBidForm(request.POST)
         form_2 = NewCommentForm(request.POST)
         return render(request, "auctions/listing.html", {
@@ -132,20 +143,27 @@ def listing(request, Auction_listings_id):
             "no_bids": no_bids,
             "valid": valid,
             "user": user,
-            #"lister":lister
+            "lister":lister,
+            "highest_bid":highest_bid,
+            "message": message
         })
 
 @login_required(login_url = '/login')
 def new_bid(request, Auction_listings_id):
     if request.method == "POST":
         form = NewBidForm(request.POST)
-        highest_bid = Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value')[0] 
         listing = Auction_listings.objects.get(id = Auction_listings_id)
         bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
         user = request.user
+        if Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first() is not None:
+            highest_bid_2 = Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first()  #if no preexisting need to get starting
+            highest_bid = highest_bid_2.bid_value        
+        else:
+            highest_bid = listing.init_price
+
         if form.is_valid():
             new_bid = form.cleaned_data["new_bid"]
-            if new_bid > highest_bid.bid_value:
+            if new_bid > highest_bid:
                 newBid = Bids(
                     bidding_user = user,
                     selling_item = listing,
@@ -161,12 +179,18 @@ def new_bid(request, Auction_listings_id):
                 })
 
             else:
-                return render(request, "auctions/listing.html", {
-                    "listing": listing,
-                    "bids": bids,
-                    "form": form,
-                    "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
-                })
+                return HttpResponseRedirect('/listing/%s' % Auction_listings_id)
+
+            '''HttpResponseRedirect('/listing/%s' % Auction_listings_id, context = {
+                "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
+            })'''
+            #render(request, 'blog/post.html', context={"form": form})
+            '''return render(request, "auctions/listing.html", {
+                "listing": listing,
+                "bids": bids,
+                "form": form,
+                "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
+            })'''
 
 @login_required(login_url = '/login')
 def go_watch(request):
@@ -217,3 +241,7 @@ def new_comment(request, Auction_listings_id):
             newComment = Comment(commenter = user, item = item, comment = content)
             newComment.save()
             return HttpResponseRedirect('/listing/%s' % Auction_listings_id)
+
+@login_required(login_url = '/login')
+def delist(request, Auction_listings_id):
+    return HttpResponseRedirect('/watchlist')

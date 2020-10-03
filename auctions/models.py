@@ -48,6 +48,7 @@ class Auction_listings(models.Model):
     picture = models.URLField(null = True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, max_length=16, null = True)
     status = models.BooleanField(default = True)
+    owner = models.ForeignKey(User, on_delete = models.CASCADE, default = 2)
 
     def __str__(self):
         return f"{self.name}"
