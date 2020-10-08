@@ -8,6 +8,10 @@
     starting price is ${{listing.init_price}}
     {{bids}}
 
+    {% if winner != None %}
+        <h1>{{winner}}</h1>
+    {% endif %}
+
     @@@@@@{{user}}|{{lister}}
 
     {% if user.is_authenticated %}
@@ -16,13 +20,15 @@
         Please note you cannot Bid without being logged in 
     {% endif %}
 
-    {% if user == lister %}
-        Close listing: 
-        <form action = "{% url 'delist' listing.id%}" method = "POST">
-            {% csrf_token %}
-            <input type = "checkbox">
-            <input type="submit">
-        </form>
+    {% if valid == True %}
+        {% if user == lister %}
+            Close listing: 
+            <form action = "{% url 'delist' listing.id%}" method = "POST">
+                {% csrf_token %}
+                <input type = "checkbox">
+                <input type="submit">
+            </form>
+        {% endif %}
     {% endif %}
 
     There are {{no_bids}} on this item

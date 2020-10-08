@@ -7,7 +7,7 @@ class User(AbstractUser):
 
 
 #Model for the categories
-class Category(models.Model):
+'''class Category(models.Model):
     FASHION = 'FA'
     TOYS = 'TY'
     ELECTRONICS = 'EL'
@@ -19,15 +19,15 @@ class Category(models.Model):
     SPORTS = 'SP'
     
     CATEGORY_CHOICES = [
-        (FASHION, "Fashion"),
-        (TOYS, "Toys"),
-        (ELECTRONICS, "Electronics"),
-        (HOME, "Home"),
-        (GARDEN, "Garden"),
-        (VEHICLES, "Vehicles"),
-        (MUSIC, "Music"),
-        (ART, "Art"),
-        (SPORTS, "Sports")
+        (FASHION, 'Fashion'),
+        (TOYS, 'Toys'),
+        (ELECTRONICS, 'Electronics'),
+        (HOME, 'Home'),
+        (GARDEN, 'Garden'),
+        (VEHICLES, 'Vehicles'),
+        (MUSIC, 'Music'),
+        (ART, 'Art'),
+        (SPORTS, 'Sports')
     ]
     category = models.CharField(
         max_length=2,
@@ -37,7 +37,7 @@ class Category(models.Model):
     )
 
     def __str__(self):
-        return f"{self.category}"
+        return f"{self.category}"'''
 
 
 #Model for the listings
@@ -46,9 +46,10 @@ class Auction_listings(models.Model):
     body_text = models.TextField()
     init_price = models.FloatField(max_length=16)
     picture = models.URLField(null = True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, max_length=16, null = True)
+    category = models.CharField(default= "Fashion", max_length=16)
     status = models.BooleanField(default = True)
-    owner = models.ForeignKey(User, on_delete = models.CASCADE, default = 2)
+    owner = models.ForeignKey(User, on_delete = models.CASCADE, default = 2, related_name="owner")
+    winner = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True, related_name="winner")
 
     def __str__(self):
         return f"{self.name}"

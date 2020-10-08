@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import User, Auction_listings, Category, Bids, WatchList, Comment
+from .models import User, Auction_listings, Bids, WatchList, Comment
 from .forms import NewListingForm, NewBidForm, NewCommentForm
 
 
@@ -14,8 +14,6 @@ def index(request):
     return render(request, "auctions/index.html", {
         "listings": Auction_listings.objects.all()
     })
-
-
 
 def login_view(request):
     if request.method == "POST":
@@ -77,6 +75,7 @@ def create_listing(request):
             content = form.cleaned_data["Listing_content"]
             init_price = form.cleaned_data["init_price"]
             picture = form.cleaned_data["picture"]
+            category = form.cleaned_data["category"]
             bidder = request.user
             
             new_listing = Auction_listings(
@@ -84,7 +83,8 @@ def create_listing(request):
                 body_text = content,
                 init_price = init_price,
                 owner = bidder,
-                picture = picture
+                picture = picture,
+                category = category
             )
             
             new_listing.save()
@@ -103,10 +103,18 @@ def create_listing(request):
     
 @login_required(login_url = '/login')
 def categories(request):
+    categories = Auction_listings.objects.values('category').distinct()
     return render(request, "auctions/categories.html", {
-        "categories": Category.objects.all()
+        "categories": categories
     })
 
+@login_required(login_url = '/login')
+def category_page(request, category):
+    listings = Auction_listings.objects.filter(category = category)
+    return render(request, "auctions/category_page.html", {
+        "category": category,
+        "listings": listings
+    })
 
 def listing(request, Auction_listings_id):
     all_listings = Auction_listings.objects.order_by().values_list('id', flat=True).distinct()
@@ -123,6 +131,14 @@ def listing(request, Auction_listings_id):
         highest_bid = highest_bid_2.bid_value
     else:
         highest_bid = listing.init_price
+    
+    if listing.winner != None:
+        winner = listing.winner
+    elif listing.winner == None and valid == False:
+        winner = "No one"
+    else:
+        winner = None
+
     if 'message' not in locals() :
         message = "No message here"
 
@@ -145,7 +161,8 @@ def listing(request, Auction_listings_id):
             "user": user,
             "lister":lister,
             "highest_bid":highest_bid,
-            "message": message
+            "message": message,
+            "winner": winner
         })
 
 @login_required(login_url = '/login')
@@ -180,17 +197,6 @@ def new_bid(request, Auction_listings_id):
 
             else:
                 return HttpResponseRedirect('/listing/%s' % Auction_listings_id)
-
-            '''HttpResponseRedirect('/listing/%s' % Auction_listings_id, context = {
-                "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
-            })'''
-            #render(request, 'blog/post.html', context={"form": form})
-            '''return render(request, "auctions/listing.html", {
-                "listing": listing,
-                "bids": bids,
-                "form": form,
-                "message": "Your bid of " + str(new_bid) + " was not larger than the preexisting bid"
-            })'''
 
 @login_required(login_url = '/login')
 def go_watch(request):
@@ -244,4 +250,14 @@ def new_comment(request, Auction_listings_id):
 
 @login_required(login_url = '/login')
 def delist(request, Auction_listings_id):
-    return HttpResponseRedirect('/watchlist')
+    listing = Auction_listings.objects.filter(id = Auction_listings_id).get()
+    if Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first() is not None:
+            highest_bid_2 = Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first()  #if no preexisting need to get starting
+            winning_bidder = highest_bid_2.bidding_user      
+    else:
+        winning_bidder = None
+    winner = winning_bidder
+    listing.status = False
+    listing.winner = winner
+    listing.save()
+    return HttpResponseRedirect('/listing/%s' % Auction_listings_id)
