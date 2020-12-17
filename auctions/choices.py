@@ -8,5 +8,6 @@ CATEGORY_CHOICES = [
     ('Vehicles', 'Vehicles'),
     ('Music', 'Music'),
     ('Art', 'Art'),
-    ('Sports', 'Sports')
+    ('Sports', 'Sports'),
+    ('Other', 'Other')
 ]

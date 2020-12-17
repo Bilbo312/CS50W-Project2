@@ -5,14 +5,52 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count,Max,Avg
+from django import template
 
 from .models import User, Auction_listings, Bids, WatchList, Comment
 from .forms import NewListingForm, NewBidForm, NewCommentForm
 
 
 def index(request):
+    listings = Auction_listings.objects.all()
+    bids = Bids.objects.all().order_by('selling_item_id', '-bid_value') #This bit
+    numbers = []
+    for bid in bids:
+        selling_item_id = bid.selling_item_id
+        if selling_item_id not in numbers:
+            numbers.append(selling_item_id)
+        else:
+            pass
+    
+    items = []
+    for number in numbers:
+        a = Auction_listings.objects.get(id = number)
+        b = Bids.objects.filter(selling_item = a).order_by('-bid_value')
+        c = b[0].bid_value
+        items.append(c)
+
+    dictionary = dict(zip(numbers,items))
+
+    '''if Bids.objects.order_by('-bid_value').first() is not None:
+        highest_bids_2 = Bids.objects.order_by('-bid_value').first() 
+        highest_bids = highest_bids_2.bid_value
+    else:
+        highest_bids = listings.init_price
+        
+    if Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first() is not None:
+        highest_bid_2 = Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first()  #if no preexisting need to get starting
+        highest_bid = highest_bid_2.bid_value
+    else:
+        highest_bid = listing.init_price'''
+        
     return render(request, "auctions/index.html", {
-        "listings": Auction_listings.objects.all()
+        "listings": listings,
+        "dictionary":dictionary,
+        "numbers": numbers,
+        "bids":bids,
+        "items":items
+
     })
 
 def login_view(request):
