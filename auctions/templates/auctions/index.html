@@ -1,4 +1,5 @@
 {% extends "auctions/layout.html" %}
+{% load bay_extras %}
 
 {% block body %}
     <h2>Active Listings</h2>
@@ -24,9 +25,9 @@
                     <th>{{listing.category}}</th>
                     <th>{{listing.init_price}}</th>
                     <th>{% if listing.id in numbers %}
-                        <!--{{items|lookup:listing.id}}-->
+                        {{dictionary|lookup:listing.id}}
                         {% else %}
-                        None
+                        -
                     {% endif %}</th>
                     
                 </tr>
