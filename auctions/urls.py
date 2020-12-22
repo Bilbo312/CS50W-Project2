@@ -1,4 +1,6 @@
 from django.urls import path
+from django.views.generic import RedirectView
+from django.conf.urls import url
 
 from . import views
 
@@ -17,4 +19,5 @@ urlpatterns = [
     path("watchlist/delete/<int:Watchitem_id>", views.del_watch, name="del_watch"),
     path("listing/<int:Auction_listings_id>/new_comment", views.new_comment, name="new_comment"),
     path("listing/<int:Auction_listings_id>/delist", views.delist, name="delist"),
+    url(r'^favicon\.ico$',RedirectView.as_view(url='/static/images/favicon.ico'))
 ]

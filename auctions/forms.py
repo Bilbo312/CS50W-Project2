@@ -5,10 +5,10 @@ from .choices import CATEGORY_CHOICES
 
 class NewListingForm(forms.Form):
     Listing_title = forms.CharField(label = "Title", max_length=64) 
-    Listing_content = forms.CharField(widget= forms.Textarea, label=" Content")
-    init_price = forms.FloatField(widget=forms.NumberInput, label = "init_bid")
-    picture = forms.URLField(required = False, label = "picture")
+    init_price = forms.FloatField(widget=forms.NumberInput(attrs={'margin-bottom': 200}), label = "Init_bid")
+    picture = forms.URLField(required = False, label = "Picture")
     category = forms.ChoiceField(choices = CATEGORY_CHOICES)
+    Listing_content = forms.CharField(widget= forms.Textarea(attrs={'rows':3,'cols': 40}), label=" Description")
 
 class NewBidForm(forms.Form):
     new_bid = forms.FloatField(widget = forms.NumberInput, label = "new_bid", required= False)

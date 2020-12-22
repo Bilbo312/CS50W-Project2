@@ -31,18 +31,6 @@ def index(request):
         items.append(c)
 
     dictionary = dict(zip(numbers,items))
-
-    '''if Bids.objects.order_by('-bid_value').first() is not None:
-        highest_bids_2 = Bids.objects.order_by('-bid_value').first() 
-        highest_bids = highest_bids_2.bid_value
-    else:
-        highest_bids = listings.init_price
-        
-    if Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first() is not None:
-        highest_bid_2 = Bids.objects.filter(selling_item = Auction_listings_id).order_by('-bid_value').first()  #if no preexisting need to get starting
-        highest_bid = highest_bid_2.bid_value
-    else:
-        highest_bid = listing.init_price'''
         
     return render(request, "auctions/index.html", {
         "listings": listings,

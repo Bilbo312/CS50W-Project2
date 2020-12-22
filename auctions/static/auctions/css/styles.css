@@ -1,0 +1,46 @@
+body {
+    padding: 10px;
+    padding-left: 2%;
+}
+
+table, th,tr, td {
+    border: 1px solid black;
+    font-weight: lighter;
+}
+
+th {
+    font-weight: bold;
+    padding-right: 5px;
+}
+
+.div_1 {
+    margin-top: 20px;
+    border: black;
+}
+
+.div_2 {
+    width: 300px;
+    height: 70%;
+}
+
+.div_3 {
+    position: absolute;
+    left:30%;
+    top: 200px;
+    color: chocolate;
+}
+
+.div_4 {
+    border: blue;
+    left: auto;
+    font-size: 40px;
+}
+
+.foo {
+    padding-left: 15px;
+}
+
+#Full_Table {
+    width: 80%;
+}
+

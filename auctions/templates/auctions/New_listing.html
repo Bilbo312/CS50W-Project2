@@ -5,12 +5,29 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Create New Listing</h1>
 
+    <style>
+        textarea {
+            position: absolute;
+            left: 120px;
+
+        }
+        input {
+            position: absolute;
+            left: 120px;
+        }
+        select {
+            position: absolute;
+            left:120px
+        }
+
+    </style>
+    <h1>Create New Listing</h1>
+    <div class = "div_1"></div>
     <form action="{% url 'create_listing' %}" method="post">
         {% csrf_token %}
-        {{ form }}
-        <input class="submit-btn" type="submit" value="Submit" />
+        {{ form.as_p }}
+        <input class="submit-btn" type="submit" value="Submit" style="left: 445px; margin-top: 60px;"/>
     </form>
 
 {% endblock %}
