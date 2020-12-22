@@ -101,6 +101,8 @@ def create_listing(request):
             content = form.cleaned_data["Listing_content"]
             init_price = form.cleaned_data["init_price"]
             picture = form.cleaned_data["picture"]
+            if len(picture)==0:
+                picture = None
             category = form.cleaned_data["category"]
             bidder = request.user
             

@@ -1,12 +1,12 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h1>{{user}}'s Watchlist </h1>   
-
+    <h2>{{user}}'s Watchlist </h2>   
+    <div class = "div_1"></div>
     {% for listitem in listitems %}
         <li>
             Listing {{ listitem.Watchitem }} is being watched by you : {{ listitem.Watchuser }}. 
-            <a href="{% url 'del_watch' listitem.Watchitem_id %}">Delete item</a>
+            <a href="{% url 'del_watch' listitem.Watchitem_id %}" style="position: relative; margin-left: 20px;">Delete item</a>
         </li>
     {% endfor %}
 

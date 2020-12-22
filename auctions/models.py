@@ -10,7 +10,7 @@ class User(AbstractUser):
 class Auction_listings(models.Model):
     name = models.CharField(max_length=64)
     body_text = models.TextField()
-    init_price = models.FloatField(max_length=16)
+    init_price = models.DecimalField(decimal_places=2, max_digits=9)
     picture = models.URLField(null = True, blank=True)
     category = models.CharField(default= "Fashion", max_length=16)
     status = models.BooleanField(default = True)

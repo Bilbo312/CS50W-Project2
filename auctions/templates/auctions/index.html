@@ -4,32 +4,28 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    {{numbers}}
-    ////{{items}}
-    \\\\{% for item in items %}
-        {{item.selling_item}}
-    {% endfor %}
-
-    {{dictionary}}
-    <table>
+    <div class = "div_1"></div>
+    <table id = Full_Table>
         <tr>
             <th>Picture</th>
             <th>Title</th>
             <th>Category</th>
             <th>Initial Price</th>
+            <th>Seller</th>
             <th>Current Bid</th>
         </tr>
             {% for listing in listings %}
                 <tr>
-                    <th>{{listing.picture}}</th>
-                    <th><a href="{% url 'listing' listing.id%}">{{listing.name}}</a></th>
-                    <th>{{listing.category}}</th>
-                    <th>{{listing.init_price}}</th>
-                    <th>{% if listing.id in numbers %}
+                    <td><img src ="{{listing.picture}}" alt = "No picture Provided" width="200px"></td>
+                    <td><a href="{% url 'listing' listing.id%}">{{listing.name}}</a></td>
+                    <td>{{listing.category}}</td>
+                    <td>{{listing.init_price}}</td>
+                    <td>{{listing.owner}}</td>
+                    <td>{% if listing.id in numbers %}
                         {{dictionary|lookup:listing.id}}
                         {% else %}
                         -
-                    {% endif %}</th>
+                    {% endif %}</td>
                     
                 </tr>
             {% endfor %}

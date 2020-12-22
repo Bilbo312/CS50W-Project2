@@ -1,28 +1,13 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
 
 {% block title %}
     Create New Listing
 {% endblock %}
 
 {% block body %}
-
-    <style>
-        textarea {
-            position: absolute;
-            left: 120px;
-
-        }
-        input {
-            position: absolute;
-            left: 120px;
-        }
-        select {
-            position: absolute;
-            left:120px
-        }
-
-    </style>
-    <h1>Create New Listing</h1>
+    <link href="{% static 'auctions/css/new.css' %}" rel="stylesheet">
+    <h2>Create New Listing</h2>
     <div class = "div_1"></div>
     <form action="{% url 'create_listing' %}" method="post">
         {% csrf_token %}
