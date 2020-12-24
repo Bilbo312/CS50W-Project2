@@ -13,7 +13,7 @@ from .forms import NewListingForm, NewBidForm, NewCommentForm
 
 
 def index(request):
-    listings = Auction_listings.objects.all()
+    listings = Auction_listings.objects.filter(status = True)
     bids = Bids.objects.all().order_by('selling_item_id', '-bid_value') #This bit
     numbers = []
     for bid in bids:
@@ -168,7 +168,7 @@ def listing(request, Auction_listings_id):
         winner = None
 
     if 'message' not in locals() :
-        message = "No message here"
+        message = ""
 
     if Auction_listings_id not in all_listings:
         return render(request, "auctions/error_message.html", {
@@ -230,9 +230,12 @@ def new_bid(request, Auction_listings_id):
 def go_watch(request):
     user = request.user
     Listitems = WatchList.objects.filter(Watchuser = user)
+    items = []
+ 
     return render(request, "auctions/watchlist.html", { 
         "user": user,
-        "listitems": Listitems
+        "listitems": Listitems,
+        "items":items
     })
 
 @login_required(login_url = '/login')

@@ -11,7 +11,7 @@ class NewListingForm(forms.Form):
     Listing_content = forms.CharField(widget= forms.Textarea(attrs={'rows':3,'cols': 40}), label=" Description")
 
 class NewBidForm(forms.Form):
-    new_bid = forms.FloatField(widget = forms.NumberInput, label = "new_bid", required= False)
+    new_bid = forms.FloatField(widget = forms.NumberInput, label = "New Bid", required= False)
 
 class NewCommentForm(forms.Form):
-    comment_content = forms.CharField(widget= forms.Textarea, label= "new_comment", required = False)
+    comment_content = forms.CharField(widget= forms.Textarea(attrs={'rows':3,'cols': 40}), label= "New Comment", required = False)

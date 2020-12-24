@@ -1,65 +1,93 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
 
 {% block body %}
+    <link href="{% static 'auctions/css/listing.css' %}" rel="stylesheet">
 
     <h2>Listing: {{listing.name}}</h2>
     <div class = "div_1"></div>
 
-    {{listing.body_text}}
-    starting price is ${{listing.init_price}}
-    {{bids}}
 
-    {% if winner != None %}
-        <h1>{{winner}}</h1>
-    {% endif %}
+    <div style= "height: 300px; display: flex;">
+        <div style = "height: 300px; display: inline-block;">
+            <img src ="{{listing.picture}}" alt = "No picture Provided" style="max-height: 300px; line-height: 400px; text-align: center;" >
+        </div>
+        <div style="width: 5%;"></div>
+        <div style= "display: inline-block; min-width: 70px;">
+            <div>
+                {% if winner != None %}
+                    <h1>This listing was won by {{winner}}</h1>
+                {% endif %}
+            </div>
+            <div>
+                {% if valid == True %}
+                    {% if user == lister %}
+                        <p style="display: inline-block;">
+                            You are the owner of this listing, do you want to Close listing? &nbsp;    
+                            <form action = "{% url 'delist' listing.id%}" method = "POST" style="display: inline-block;">
+                                {% csrf_token %}
+                                <input type = "checkbox">
+                                <input type="submit" value = "Close Listing">
+                            </form>
+                        </p>
+                    {% endif %}
+                {% endif %}   
+            </div>
+            <div>
+                <p>Initial price is <strong>${{listing.init_price}}</strong></p>
+                <p>There are <strong>{{no_bids}} bid(s)</strong> on this listing</p>
+                <p>The current highest bid is <strong>${{highest_bid}}</strong></p>
+                {% if valid == True %}
+                    <form action="{% url 'new_bid' listing.id%}" method = "POST">
+                        {% csrf_token %}
+                        {{form}}
+                        <input type="submit" value="Enter Bid">
+                    </form>
+                {% endif %}
+            </div>
+            <div>
+                {% if user.is_authenticated %}
+                    <p>Would you like to <a href="{% url 'add_watch' listing.id%}">Add to watchlist</a>?</p>
+                {% else %}
+                    Please note you cannot Bid without being logged in 
+                {% endif %}
+                <strong>{{message}}</strong>
+                {% if question %}
+                    {{message}}. Would you like to go to your <a href="{% url 'go_watch'%}">watchlist</a>?
+                    {% else %}
+                        
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-    @@@@@@{{user}}|{{lister}}
-
-    {% if user.is_authenticated %}
-        <a href="{% url 'add_watch' listing.id%}">Add to watchlist</a>
-    {% else %}
-        Please note you cannot Bid without being logged in 
-    {% endif %}
-
-    {% if valid == True %}
-        {% if user == lister %}
-            Close listing: 
-            <form action = "{% url 'delist' listing.id%}" method = "POST">
-                {% csrf_token %}
-                <input type = "checkbox">
-                <input type="submit">
-            </form>
-        {% endif %}
-    {% endif %}
-
-    There are {{no_bids}} on this item
-    <strong>{{highest_bid}}</strong>
-    ???????????????{{valid}}??????????????????????
-    <strong>{{message}}</strong>
-    LLLLL
-    {% if question %}
-        {{message}}. Would you like to go to your <a href="{% url 'go_watch'%}">watchlist</a>?
-        {% else %}
-            
-    {% endif %}
-    {% if valid == True %}
-        <form action="{% url 'new_bid' listing.id%}" method = "POST">
-            {% csrf_token %}
-            {{form}}
-            <input type="submit">
-        </form>
-
-        <form action="{% url 'new_comment' listing.id%}" method = "POST">
+    <div class="div_pad" style="margin-top: 50px;">
+        <h4>Item Description</h4>
+        <p>{{listing.body_text}}</p>
+        <p>This item has been listed by <b>{{lister}}</b></p>
+    </div>
+    
+    <div class="div_pad">
+        {% if valid == True %}
+        <form action="{% url 'new_comment' listing.id%}" method = "POST" >
             {% csrf_token %}
             {{comment_form}}
-            <input type="submit">
+            <input type="submit" class="com_but" value="Submit Comment">
         </form>
     {% endif %}
-    Comments ({{no_comments}})
-    {% for comment in comments %}
-    <li>
-        {{comment.comment}} | {{comment.commenter}} @ {{comment.created}}
-    </li>
-    {% endfor %}
+
+    <br><br><br>
+
+
+    <div>
+        Comments ({{no_comments}})
+        {% for comment in comments %}
+            <li>
+                {{comment.comment}} | {{comment.commenter}} @ {{comment.created}}
+            </li>
+        {% endfor %}
+    </div>
+    
+    </div>
     
 {% endblock %}

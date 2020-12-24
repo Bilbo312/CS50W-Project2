@@ -1,11 +1,3 @@
-Get numerical values to appear as 2 dp 
-Create style page
-Impliment style page
 Allow people who have won auctions to see their wins 
 
-
-register = template.Library()
-
-@register.filter
-def lookup(d, key):
-    return d[key]
+Link watchlists 

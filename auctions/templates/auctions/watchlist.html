@@ -5,9 +5,13 @@
     <div class = "div_1"></div>
     {% for listitem in listitems %}
         <li>
+            {{Auction_listing}}
+            <a href="{% url 'listing' listitem.id%}">{{listitem.Watchitem}}</a>
             Listing {{ listitem.Watchitem }} is being watched by you : {{ listitem.Watchuser }}. 
             <a href="{% url 'del_watch' listitem.Watchitem_id %}" style="position: relative; margin-left: 20px;">Delete item</a>
         </li>
     {% endfor %}
+
+    {{items}}
 
 {% endblock %}
