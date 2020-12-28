@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Google Images</title>
+        <style>
+            .links {
+                color: black;
+                text-decoration: none;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 13px;
+                position: absolute;
+                right: 50px;
+                top: 30px;
+            }
+
+            #foo {
+                margin-top: 150px;
+            }
+ 
+            #search {
+                width: 537px;
+                border-radius: 15px;
+                border: 1px grey solid;
+                padding: 5px 5px 5px 25px;
+            }
+
+            .center {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 10px;
+            }
+
+            .btn {
+                display: inline-block;
+            }
+
+
+
+        </style>
+    </head>
+    <body>
+        <div>
+            <a class = "links" href = "Fake google.html">Google </a>
+        </div>
+        <div>
+            <img src = "Google_Images_logo.png" alt = "The Google Images logo" class = "center" id = "foo">
+            <form action="https://google.com/search">
+                <input type = "text" placeholder="Search Bar" name="q" class = "center" id="search">
+                <input type = "hidden" name="tbm" value ="isch">
+            </form>
+        </div>
+    </body>
+</html>
