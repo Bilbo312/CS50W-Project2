@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count,Max,Avg
 from django import template
 
-from .models import User, Auction_listings, Bids, WatchList, Comment
+from .models import User, Auction_listings, Bids, Comment
 from .forms import NewListingForm, NewBidForm, NewCommentForm
 
 
@@ -228,41 +228,21 @@ def new_bid(request, Auction_listings_id):
 
 @login_required(login_url = '/login')
 def go_watch(request):
-    user = request.user
-    Listitems = WatchList.objects.filter(Watchuser = user)
-    items = []
+    watchlist = request.user.watchlist.all()
     return render(request, "auctions/watchlist.html", { 
-        "user": user,
-        "listitems": Listitems,
-        "items":items
-    })
+        "watchlist":watchlist
+        })
 
 @login_required(login_url = '/login')
 def add_watch(request, Auction_listings_id):
     listing = Auction_listings.objects.get(id = Auction_listings_id)
-    form = NewBidForm(request.POST)
-    bids = Bids.objects.filter(selling_item = Auction_listings_id).order_by('bid_value')
-    user = request.user
-    if WatchList.objects.filter(Watchuser = user, Watchitem=listing).exists():
-        return render(request, "auctions/listing.html", {
-                    "listing": listing,
-                    "bids": bids,
-                    "form": form,
-                    "message": "This item is already on the Watchlist",
-                    "question": True
-                })
-    else:
-        newWatch = WatchList(
-            Watchuser = user,
-            Watchitem = listing
-        )
-        newWatch.save()
-        return HttpResponseRedirect('/watchlist')
+    listing.watching.add(request.user)
+    return HttpResponseRedirect('/watchlist')
 
 @login_required(login_url = '/login')
-def del_watch(request, Watchitem_id):
-    item = WatchList.objects.filter(Watchitem_id = Watchitem_id)
-    item.delete()
+def del_watch(request, Auction_listings_id):
+    listing = Auction_listings.objects.get(id = Auction_listings_id)
+    listing.watching.remove(request.user)
     return HttpResponseRedirect('/watchlist')
 
 @login_required(login_url = '/login')

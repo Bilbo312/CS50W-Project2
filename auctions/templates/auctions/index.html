@@ -16,7 +16,7 @@
         </tr>
             {% for listing in listings %}
                 <tr>
-                    <td><img src ="{{listing.picture}}" alt = "No picture Provided" style="max-height: 200px;"></td>
+                    <td><img src ="{{listing.picture}}" alt = "No picture Provided" style="max-height: 200px; max-width: 300px;"></td>
                     <td><a href="{% url 'listing' listing.id%}">{{listing.name}}</a></td>
                     <td>{{listing.category}}</td>
                     <td>{{listing.init_price}}</td>

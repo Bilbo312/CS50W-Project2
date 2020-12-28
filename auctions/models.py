@@ -17,6 +17,9 @@ class Auction_listings(models.Model):
     owner = models.ForeignKey(User, on_delete = models.CASCADE, default = 2, related_name="owner")
     winner = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True, related_name="winner")
 
+
+    watching = models.ManyToManyField(User, blank = True, related_name="watchlist")
+
     def __str__(self):
         return f"{self.name}"
 
@@ -40,10 +43,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.commenter} commented {self.comment} on {self.item} at {self.created}"
-
-class WatchList(models.Model):
-    Watchuser = models.ForeignKey(User, on_delete = models.CASCADE, related_name="watchuser")
-    Watchitem = models.ForeignKey(Auction_listings, on_delete = models.CASCADE, related_name="watchitem")
-
-    def __str__(self):
-        return f"this item is {self.Watchitem} and it is being watched by {self.Watchuser}"
