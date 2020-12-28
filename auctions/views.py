@@ -231,7 +231,6 @@ def go_watch(request):
     user = request.user
     Listitems = WatchList.objects.filter(Watchuser = user)
     items = []
- 
     return render(request, "auctions/watchlist.html", { 
         "user": user,
         "listitems": Listitems,
@@ -292,3 +291,31 @@ def delist(request, Auction_listings_id):
     listing.winner = winner
     listing.save()
     return HttpResponseRedirect('/listing/%s' % Auction_listings_id)
+
+@login_required(login_url = '/login')
+def winner(request):
+    user = request.user
+    listings = Auction_listings.objects.filter(status = False, winner = user)
+    bids = Bids.objects.all().order_by('selling_item_id', '-bid_value') #This bit
+    numbers = []
+    for bid in bids:
+        selling_item_id = bid.selling_item_id
+        if selling_item_id not in numbers:
+            numbers.append(selling_item_id)
+        else:
+            pass
+    
+    items = []
+    for number in numbers:
+        a = Auction_listings.objects.get(id = number)
+        b = Bids.objects.filter(selling_item = a).order_by('-bid_value')
+        c = b[0].bid_value
+        items.append(c)
+
+    dictionary = dict(zip(numbers,items))
+        
+    return render(request, "auctions/winner.html", {
+    "listings" : listings,
+    "user":user,
+    "dictionary":dictionary
+    })

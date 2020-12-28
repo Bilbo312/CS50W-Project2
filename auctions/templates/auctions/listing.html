@@ -51,9 +51,8 @@
                 {% else %}
                     Please note you cannot Bid without being logged in 
                 {% endif %}
-                <strong>{{message}}</strong>
                 {% if question %}
-                    {{message}}. Would you like to go to your <a href="{% url 'go_watch'%}">watchlist</a>?
+                    <strong>{{message}}.</strong> Would you like to go to your <a href="{% url 'go_watch'%}">Watchlist</a>?
                     {% else %}
                         
                 {% endif %}
